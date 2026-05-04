@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CertiChain — Blockchain-Based Certificate Verification
+
+Official platform of the **Ministry of Higher Education — Algeria** for issuing, managing, and verifying academic credentials using blockchain technology.
+
+## Architecture
+
+- **Blockchain**: Ethereum (Sepolia testnet) — immutable diploma records (hash + status)
+- **Storage**: IPFS via Pinata — decentralized encrypted diploma storage
+- **Encryption**: AES-256 symmetric encryption with public-key key exchange
+- **Signatures**: Digital signatures for authenticity verification
+- **Frontend**: Next.js + React + Tailwind CSS
+
+## Portals
+
+| Portal | Role | Description |
+|--------|------|-------------|
+| **Ministry** | Government Authority | Deploy contracts, whitelist universities, platform oversight |
+| **University** | Academic Institution | Register students, issue & sign diplomas, manage credentials |
+| **Student** | Credential Owner | View diplomas, share securely with verifiers |
+| **Verifier** | Employer/Institution | Verify authenticity, integrity, and validity of diplomas |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- MetaMask wallet
+- Pinata account (for IPFS)
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_ALCHEMY_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+NEXT_PUBLIC_CONTRACT_ADDRESS=YOUR_DEPLOYED_CONTRACT
+NEXT_PUBLIC_PINATA_GATEWAY=https://gateway.pinata.cloud/ipfs
+
+PINATA_API_KEY=your_pinata_api_key
+PINATA_SECRET_KEY=your_pinata_secret_key
+PINATA_JWT=your_pinata_jwt
+
+JWT_SECRET=your_jwt_secret
+```
+
+### Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Deploy Smart Contract
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx hardhat compile
+DEPLOYER_PRIVATE_KEY=your_key npx hardhat run scripts/deploy.ts --network sepolia
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Flow
 
-## Learn More
+1. **Ministry** deploys the smart contract and whitelists universities
+2. **Universities** register students and issue encrypted E-Diplomas
+3. **Students** receive diplomas and can share them securely
+4. **Verifiers** check authenticity, integrity, and validity on-chain
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router)
+- Tailwind CSS v4
+- Solidity 0.8.19
+- ethers.js v6
+- Pinata (IPFS)
+- CryptoJS (AES encryption)
