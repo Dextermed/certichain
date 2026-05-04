@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 const roles = [
-  { value: 'ministry', label: 'Ministry', description: 'Government authority managing the platform' },
   { value: 'university', label: 'University', description: 'Academic institution issuing diplomas' },
   { value: 'student', label: 'Student', description: 'Diploma holder and credential owner' },
   { value: 'verifier', label: 'Verifier', description: 'Employer or institution verifying credentials' },

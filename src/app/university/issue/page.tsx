@@ -14,7 +14,7 @@ const navItems = [
 ];
 
 export default function IssueDiplomaPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -60,9 +60,8 @@ export default function IssueDiplomaPage() {
 
       let cid = '';
       try {
-        const ipfsRes = await fetch('/api/ipfs', {
+        const ipfsRes = await authFetch('/api/ipfs', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ data: { encrypted: encryptedData }, name: `diploma-${formData.studentId}` }),
         });
         if (ipfsRes.ok) {
@@ -73,9 +72,8 @@ export default function IssueDiplomaPage() {
         cid = `QmSIMULATED${Date.now()}`;
       }
 
-      const diplomaRes = await fetch('/api/diplomas', {
+      const diplomaRes = await authFetch('/api/diplomas', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           studentId: formData.studentId,
           universityId: user?.id,

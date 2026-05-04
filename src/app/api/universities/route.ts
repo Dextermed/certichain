@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { addUniversity, getAllUniversities } from '@/lib/store';
+import { authenticateRequest, requireRole } from '@/lib/apiAuth';
 
-export async function GET() {
-  const universities = getAllUniversities();
-  return NextResponse.json(universities);
+export async function GET(request: Request) {
+  const auth = authenticateRequest(request);
+  if (auth instanceof NextResponse) return auth;
+
+  return NextResponse.json(getAllUniversities());
 }
 
 export async function POST(request: Request) {
+  const auth = authenticateRequest(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const roleCheck = requireRole(auth, 'ministry');
+  if (roleCheck) return roleCheck;
+
   try {
     const { name, walletAddress, location, website } = await request.json();
 

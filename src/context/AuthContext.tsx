@@ -10,6 +10,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  authFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 interface RegisterData {
@@ -83,8 +84,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('certichain_user');
   };
 
+  const authFetch = async (url: string, options: RequestInit = {}) => {
+    const headers = new Headers(options.headers);
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+    if (!headers.has('Content-Type') && options.body) {
+      headers.set('Content-Type', 'application/json');
+    }
+    return fetch(url, { ...options, headers });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading, authFetch }}>
       {children}
     </AuthContext.Provider>
   );

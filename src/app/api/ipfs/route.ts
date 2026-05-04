@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
+import { authenticateRequest, requireRole } from '@/lib/apiAuth';
 
 const PINATA_JWT = process.env.PINATA_JWT || '';
 
 export async function POST(request: Request) {
+  const auth = authenticateRequest(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const roleCheck = requireRole(auth, 'university');
+  if (roleCheck) return roleCheck;
+
   try {
     const body = await request.json();
 

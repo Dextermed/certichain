@@ -13,7 +13,7 @@ const navItems = [
 ];
 
 export default function UniversitiesPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [universities, setUniversities] = useState<University[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -31,16 +31,15 @@ export default function UniversitiesPage() {
   }, []);
 
   const fetchUniversities = () => {
-    fetch('/api/universities').then(r => r.json()).then(setUniversities).catch(() => {});
+    authFetch('/api/universities').then(r => r.json()).then(setUniversities).catch(() => {});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/universities', {
+      const res = await authFetch('/api/universities', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       if (res.ok) {

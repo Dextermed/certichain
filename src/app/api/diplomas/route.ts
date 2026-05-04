@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { addDiploma, getAllDiplomas, getDiplomasByStudent, getDiplomasByUniversity } from '@/lib/store';
+import { authenticateRequest, requireRole } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
+  const auth = authenticateRequest(request);
+  if (auth instanceof NextResponse) return auth;
+
   const { searchParams } = new URL(request.url);
   const studentId = searchParams.get('studentId');
   const universityId = searchParams.get('universityId');
@@ -14,10 +18,19 @@ export async function GET(request: Request) {
     return NextResponse.json(getDiplomasByUniversity(universityId));
   }
 
+  const roleCheck = requireRole(auth, 'ministry');
+  if (roleCheck) return roleCheck;
+
   return NextResponse.json(getAllDiplomas());
 }
 
 export async function POST(request: Request) {
+  const auth = authenticateRequest(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const roleCheck = requireRole(auth, 'university');
+  if (roleCheck) return roleCheck;
+
   try {
     const body = await request.json();
     const { studentId, universityId, studentName, universityName, degree, field, graduationDate, cid, diplomaHash, txHash } = body;

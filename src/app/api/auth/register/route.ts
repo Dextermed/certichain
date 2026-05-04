@@ -12,8 +12,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    const validRoles: UserRole[] = ['ministry', 'university', 'student', 'verifier'];
-    if (!validRoles.includes(role)) {
+    const validRoles: UserRole[] = ['university', 'student', 'verifier'];
+    if (role === 'ministry') {
+      const adminKey = request.headers.get('x-admin-key');
+      const expectedKey = process.env.MINISTRY_ADMIN_KEY || 'certichain-ministry-setup';
+      if (adminKey !== expectedKey) {
+        return NextResponse.json({ error: 'Ministry registration requires admin authorization' }, { status: 403 });
+      }
+    } else if (!validRoles.includes(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 

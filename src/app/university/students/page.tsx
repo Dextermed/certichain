@@ -14,7 +14,7 @@ const navItems = [
 ];
 
 export default function StudentsPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -28,20 +28,23 @@ export default function StudentsPage() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    fetchStudents();
-  }, []);
+    if (user?.role === 'university') {
+      fetchStudents();
+    }
+  }, [user]);
 
   const fetchStudents = () => {
-    fetch('/api/students').then(r => r.json()).then(setStudents).catch(() => {});
+    if (user?.id) {
+      authFetch(`/api/students?universityId=${user.id}`).then(r => r.json()).then(setStudents).catch(() => {});
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/students', {
+      const res = await authFetch('/api/students', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, universityId: user?.id }),
       });
       if (res.ok) {
