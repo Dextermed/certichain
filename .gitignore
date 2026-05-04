@@ -43,3 +43,6 @@ next-env.d.ts
 cache
 artifacts
 typechain-types
+
+# sqlite
+/data
