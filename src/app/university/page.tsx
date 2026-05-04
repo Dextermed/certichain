@@ -14,7 +14,7 @@ const navItems = [
 ];
 
 export default function UniversityDashboard() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [students, setStudents] = useState<Student[]>([]);
   const [diplomas, setDiplomas] = useState<Diploma[]>([]);
@@ -27,8 +27,8 @@ export default function UniversityDashboard() {
 
   useEffect(() => {
     if (user?.role === 'university') {
-      fetch('/api/students').then(r => r.json()).then(setStudents).catch(() => {});
-      fetch('/api/diplomas').then(r => r.json()).then(setDiplomas).catch(() => {});
+      authFetch(`/api/students?universityId=${user.id}`).then(r => r.json()).then(setStudents).catch(() => {});
+      authFetch(`/api/diplomas?universityId=${user.id}`).then(r => r.json()).then(setDiplomas).catch(() => {});
     }
   }, [user]);
 

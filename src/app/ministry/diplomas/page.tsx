@@ -13,7 +13,7 @@ const navItems = [
 ];
 
 export default function AllDiplomasPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [diplomas, setDiplomas] = useState<Diploma[]>([]);
 
@@ -24,8 +24,10 @@ export default function AllDiplomasPage() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    fetch('/api/diplomas').then(r => r.json()).then(setDiplomas).catch(() => {});
-  }, []);
+    if (user?.role === 'ministry') {
+      authFetch('/api/diplomas').then(r => r.json()).then(setDiplomas).catch(() => {});
+    }
+  }, [user]);
 
   if (isLoading || !user) return null;
 

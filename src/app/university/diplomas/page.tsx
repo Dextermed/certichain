@@ -14,7 +14,7 @@ const navItems = [
 ];
 
 export default function UniversityDiplomasPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [diplomas, setDiplomas] = useState<Diploma[]>([]);
 
@@ -25,8 +25,10 @@ export default function UniversityDiplomasPage() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    fetch('/api/diplomas').then(r => r.json()).then(setDiplomas).catch(() => {});
-  }, []);
+    if (user?.role === 'university') {
+      authFetch(`/api/diplomas?universityId=${user.id}`).then(r => r.json()).then(setDiplomas).catch(() => {});
+    }
+  }, [user]);
 
   if (isLoading || !user) return null;
 

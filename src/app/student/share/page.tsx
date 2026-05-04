@@ -13,7 +13,7 @@ const navItems = [
 ];
 
 export default function ShareDiplomaPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, authFetch } = useAuth();
   const router = useRouter();
   const [diplomas, setDiplomas] = useState<Diploma[]>([]);
   const [selectedDiploma, setSelectedDiploma] = useState('');
@@ -27,8 +27,10 @@ export default function ShareDiplomaPage() {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    fetch('/api/diplomas').then(r => r.json()).then(setDiplomas).catch(() => {});
-  }, []);
+    if (user?.role === 'student') {
+      authFetch(`/api/diplomas?studentId=${user.id}`).then(r => r.json()).then(setDiplomas).catch(() => {});
+    }
+  }, [user]);
 
   const handleShare = () => {
     if (!selectedDiploma || !verifierAddress) return;
@@ -75,17 +77,17 @@ export default function ShareDiplomaPage() {
                 placeholder="0x..."
               />
               <p className="text-dark-500 text-xs mt-1">
-                The symmetric key will be encrypted with this public key for secure sharing
+                The AES key is encrypted using NaCl public-key encryption (Curve25519-XSalsa20-Poly1305)
               </p>
             </div>
 
             <div className="p-4 rounded-xl bg-gold-400/5 border border-gold-400/20">
               <p className="text-gold-400 text-sm font-medium mb-2">Sharing Process:</p>
               <ol className="text-dark-400 text-xs space-y-1 list-decimal list-inside">
-                <li>The AES symmetric key is encrypted with the verifier&apos;s public key</li>
+                <li>The AES key is encrypted with NaCl public-key encryption (Curve25519)</li>
                 <li>The CID, signature, and encrypted key are sent to the verifier</li>
-                <li>The verifier decrypts using their private key</li>
-                <li>No plaintext key is ever shared</li>
+                <li>The verifier decrypts using their NaCl private key</li>
+                <li>No plaintext key is ever shared — true asymmetric encryption</li>
               </ol>
             </div>
 
